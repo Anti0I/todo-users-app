@@ -7,19 +7,21 @@ from schemas import TaskCreate, TaskUpdate, UserCreate, UserUpdate
 
 
 class BaseHandler(MethodView):
-    def response(self, data=None, message=None, status_code=200):
-        payload = {}
-        if message:
-            payload["message"] = message
+    @staticmethod
+    def response(message: str, data=None, status_code=200):
+        payload = {"message": message}
+
         if data is not None:
             if isinstance(data, list):
-                payload["data"] = [item.model_dump() if hasattr(item, 'model_dump') else item for item in data]
+                payload["data"] = [
+                    item.model_dump() if hasattr(item, "model_dump") else item
+                    for item in data
+                ]
             else:
-                payload["data"] = data.model_dump() if hasattr(data, 'model_dump') else data
+                payload["data"] = data.model_dump() if hasattr(data, "model_dump") else data
+
         return jsonify(payload), status_code
 
-    def error(self, message, status_code=400):
-        return jsonify({"error": message}), status_code
 
 
 class TaskHandler(BaseHandler):

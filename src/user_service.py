@@ -7,7 +7,7 @@ class UserService:
     @staticmethod
     def get_all():
         try:
-            users = current_app._session.query(User).all()
+            users = current_app.session.query(User).all()
             return [UserResponse.model_validate(user) for user in users], None
         except Exception as e:
             return None, str(e)
@@ -15,7 +15,7 @@ class UserService:
     @staticmethod
     def get_by_id(user_id):
         try:
-            user = current_app._session.query(User).filter(User.id == user_id).first()
+            user = current_app.session.query(User).filter(User.id == user_id).first()
             if not user:
                 return None, "User not found"
             return UserResponse.model_validate(user), None
@@ -30,17 +30,17 @@ class UserService:
                 role=data.role
             )
             
-            current_app._session.add(user)
-            current_app._session.commit()
+            current_app.session.add(user)
+            current_app.session.commit()
             return UserResponse.model_validate(user), None
         except Exception as e:
-            current_app._session.rollback()
+            current_app.session.rollback()
             return None, str(e)
 
     @staticmethod
     def update(user_id, data: UserUpdate):
         try:
-            user = current_app._session.query(User).filter(User.id == user_id).first()
+            user = current_app.session.query(User).filter(User.id == user_id).first()
             if not user:
                 return None, "User not found"
             
@@ -49,22 +49,22 @@ class UserService:
             if data.role is not None:
                 user.role = data.role
             
-            current_app._session.commit()
+            current_app.session.commit()
             return UserResponse.model_validate(user), None
         except Exception as e:
-            current_app._session.rollback()
+            current_app.session.rollback()
             return None, str(e)
 
     @staticmethod
     def delete(user_id):
         try:
-            user = current_app._session.query(User).filter(User.id == user_id).first()
+            user = current_app.session.query(User).filter(User.id == user_id).first()
             if not user:
                 return None, "User not found"
             
-            current_app._session.delete(user)
-            current_app._session.commit()
+            current_app.session.delete(user)
+            current_app.session.commit()
             return True, None
         except Exception as e:
-            current_app._session.rollback()
+            current_app.session.rollback()
             return None, str(e)
